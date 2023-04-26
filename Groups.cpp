@@ -6,7 +6,7 @@ using namespace std;
 #include <vector>
 
 using Int = uint_fast8_t;
-using Long = uint_fast16_t;
+using Long = uint_fast32_t;
 
 using namespace std;
 
@@ -16,11 +16,7 @@ using holder = vector<T0_0>;
 template<typename T0_1>
 using container = vector<T0_1>;
 
-template<typename T0_2>
-using matrix = holder<holder<T0_2>>;
 
-template<typename T0_3>
-using table = container<container<T0_3>>;
 
 using element = holder<Int>;
 using group = holder<element>;
