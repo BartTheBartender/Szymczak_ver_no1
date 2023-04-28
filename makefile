@@ -1,6 +1,6 @@
 CXX = g++
-#~ CXXFLAGS = -Wall -g
-CXXFLAGS = -O3 -funsafe-math-optimizations -fno-stack-protector -ffast-math -funroll-loops -fomit-frame-pointer -march=native
+CXXFLAGS = -std=c++17 -pthread -Wall -g
+#~ CXXFLAGS = -std=c++17 -pthread -O3 -funsafe-math-optimizations -fno-stack-protector -ffast-math -funroll-loops -fomit-frame-pointer -march=native
 output: main.o Groups.o Relations.o
 	$(CXX) main.o Groups.o Relations.o -o output
 	
