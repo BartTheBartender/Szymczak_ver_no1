@@ -267,6 +267,34 @@ using namespace std;
 		
 		return out.str();	
 	}
+	
+	bool Relation::is_a_map() const {
+		
+		for(Int i = 0; i < this -> size(); ++i){
+			Int row = 0;
+			for(Int j = 0; j < (*this)[0].size(); ++j){
+				row += (Int)(*this)[i][j];
+			}
+			
+			if(row != 1) return false;
+		}
+				
+		return true;
+	}
+	
+	string Relation::toString_Filip() const {
+		ostringstream out;
+			
+		for(Int i = 0; i < this -> size(); ++i){
+			
+			for(Int j = 0; j < (*this)[i].size(); ++j){
+			
+				out << (short)(*this)[i][j];
+			}
+		}
+		
+		return out.str();	
+	}	
 
 	void Relation::generate_orbits(){//metoda niebezpieczna
 		for(auto d : Relation::all_partitions){
@@ -539,7 +567,34 @@ bool Relation::are_isomorphic_thread(const Relation& A, const Relation& B, const
 		return out.str();
 	}
 	
-	string Relation::generate(Long base, Long size){
+	string Relation::output_Filip(Long base, Long size){
+		
+		ostringstream out;
+		out << base << " " << size << endl;
+		out << "===\n";
+		for(auto& szymczak_class : Relation::all_szymczak_classes){
+			
+			for(auto& dimensions_ : Relation::all_partitions){
+				out << "---\n";
+				for(const auto& R : szymczak_class[dimensions_]){
+					
+					out << R -> toString_Filip();
+					if(R -> is_a_map()) out << " y\n";
+					else out << " n\n";
+					
+				};
+				
+				out << "---\n";
+			}
+			
+			out << "===\n";
+		}
+		
+		return out.str();
+	}	
+	
+	
+	void Relation::generate(Long base, Long size){
 		cout << "base = " << base << " size = " << size << endl;
 		cout << "generowanie podziałów\n";
 		Relation::generate_all_partitions(base,size);
@@ -552,7 +607,7 @@ bool Relation::are_isomorphic_thread(const Relation& A, const Relation& B, const
 		cout << "generowanie klas\n";
 		Relation::generate_szymczak_classes();
 		cout << "zakończono generowanie\n";
-		return Relation::output(base, size);		
+		
 	}
 	
 	void Relation::reset(){
