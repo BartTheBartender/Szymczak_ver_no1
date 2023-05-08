@@ -1,4 +1,5 @@
 #include "Relations.h"
+#include <omp.h>
 
 using namespace std;
 
@@ -310,83 +311,119 @@ using namespace std;
 		//~ for(auto R : orbit) cout << R -> toString() << endl;	
 	}
 	
-	bool Relation::are_isomorphic_thread(const Relation& A, const Relation& B, const Relation& C, const Relation& D, Large i){
-		if(!( (C * A == B * C) && (D * B == A * D) )) return false;
+bool Relation::are_isomorphic_thread(const Relation& A, const Relation& B, const Relation& C, const Relation& D){
 		
-		cout << "\t\t\tthread: " << i << " C i D są morfizmami\n" << C.toString() << endl << D.toString() << endl;
-		bool DC_is_trivial = false, CD_is_trivial = false;
-		for(const auto& An : A.orbit){
-		for(const auto& Am : A.orbit){
-			
-			if((D*C) * (*An) == *Am){DC_is_trivial = true; break;}
-		}
-		if(DC_is_trivial) break;
-		}
+    bool DC_is_trivial = false, CD_is_trivial = false;
 
-		if(!DC_is_trivial) return false;
-		
-		for(const auto& Bn : B.orbit){
-		for(const auto& Bm : B.orbit){
-			
-			if((C*D) * (*Bn) == *Bm){CD_is_trivial = true; break;}
-		}
-		if(CD_is_trivial) break;
-		}		
-			
-		if(CD_is_trivial && DC_is_trivial){cout << "\t\t\tthread: " << i << " C i D są izomorfizmami\n"; return true;}
-		cout << "\t\t\tthread: " << i << " C i D nie są izomorfizmami\n"; return false;
-	}
+    #pragma omp parallel sections
+    {
+        #pragma omp section
+        {
+            // thread 1 checks DC
+            for(const auto& An : A.orbit){
+                for(const auto& Am : A.orbit){
+                    if((D*C) * (*An) == *Am){DC_is_trivial = true; break;}
+                }
+                if(DC_is_trivial) break;
+            }
+        }
+
+        #pragma omp section
+        {
+            // thread 2 checks CD
+            for(const auto& Bn : B.orbit){
+                for(const auto& Bm : B.orbit){
+                    if((C*D) * (*Bn) == *Bm){CD_is_trivial = true; break;}
+                }
+                if(CD_is_trivial) break;
+            }
+        }
+    }
+
+    if(CD_is_trivial && DC_is_trivial) return true;
+
+    return false;
+}
+
 	
+	//~ bool Relation::are_isomorphic_thread(const Relation& A, const Relation& B, const Relation& C, const Relation& D){
+		
+		//~ bool DC_is_trivial = false, CD_is_trivial = false;
+		
+
+		//~ for(const auto& An : A.orbit){
+		//~ for(const auto& Am : A.orbit){
+			
+			//~ if((D*C) * (*An) == *Am){DC_is_trivial = true; break;}
+		//~ }
+		//~ if(DC_is_trivial) break;
+		//~ }
+
+		//~ if(!DC_is_trivial) return false;
+		
+		//~ for(const auto& Bn : B.orbit){
+		//~ for(const auto& Bm : B.orbit){
+			
+			//~ if((C*D) * (*Bn) == *Bm){CD_is_trivial = true; break;}
+		//~ }
+		//~ if(CD_is_trivial) break;
+		//~ }		
+			
+		//~ if(CD_is_trivial && DC_is_trivial)return true;
+		//~ return false;
+	//~ }	
+
 	bool Relation::are_isomorphic(const Relation& A, const Relation& B){
 		if(A.domain != A.codomain || B.domain != B.codomain) throw invalid_argument("A lub B nie jest endomorfizmem!");
-		cout << "\tsprawdzamy izomorfizm między\n" << A.toString() << endl << B.toString() << endl;
-		pair < dimensions, dimensions > C_dimensions = make_pair(A.codomain, B.domain);
-		pair < dimensions, dimensions > D_dimensions = make_pair(B.codomain, A.domain);
-		
-		thread threads[(all_relations[C_dimensions].size() * all_relations[D_dimensions].size())];
-		
-		promise < bool > promised_values [(all_relations[C_dimensions].size() * all_relations[D_dimensions].size())];
-		future < bool > future_values [(all_relations[C_dimensions].size() * all_relations[D_dimensions].size())];
-		
-		Large index = 0;	
-		for(const auto& C : all_relations[C_dimensions]){
-		for(const auto& D : all_relations[C_dimensions]){			
-			cout << "\t\tnew thread" << index << "\n";
-			future_values[index] = promised_values[index].get_future();
-			
-			try{
-				threads[index] = std::thread([&A, &B, &C, &D, index, &promised_values](){
-				cout << "\t\t\tthread" << index << endl;
-				
-				bool value = are_isomorphic_thread(A,B,C,D, index);
 
-				promised_values[index].set_value(value);
-				});
+		pair<dimensions, dimensions> C_dimensions = make_pair(A.codomain, B.domain);
+		pair<dimensions, dimensions> D_dimensions = make_pair(B.codomain, A.domain);
+		bool found_isomorphic = false;
+
+		#pragma omp parallel for shared(A,B,C_dimensions,D_dimensions,found_isomorphic)
+		for(Large i = 0; i < (Large)Relation::all_relations[C_dimensions].size(); ++i){
+
+			#pragma omp parallel for shared(A,B,C_dimensions,D_dimensions,found_isomorphic)
+			for(Large j = 0; j < (Large)Relation::all_relations[D_dimensions].size(); ++j){
+
+
+
+
+				const auto& C = Relation::all_relations[C_dimensions][i];
+				const auto& D = Relation::all_relations[D_dimensions][j];
+				if(D * B != A * D) continue;
+				if(C * A != B * C) continue;
+
+				if(are_isomorphic_thread(A,B,C,D)){
+					#pragma omp critical
+					{
+						found_isomorphic = true;					
+					}
+				}
 			}
-			catch(...){
-				throw invalid_argument("błąd wątku");
-			}
-			
-			++index;
-		}
 		}
 
-		bool result = false;
-		for(Large i = 0; i < (Large)(all_relations[C_dimensions].size() * all_relations[D_dimensions].size()); ++i){
-			
-			if(future_values[i].get()){result = true; break;}
-		}		
-		
-		for(Large i = 0; i < (Large)(all_relations[C_dimensions].size() * all_relations[D_dimensions].size()); ++i){
-			cout << "\t\tthread " << i << " joined\n";
-			if(threads[i].joinable())
-				threads[i].join();
-		}
-
-		
-		
-		return result;
+		return found_isomorphic;
 	}
+
+	
+	//~ bool Relation::are_isomorphic(const Relation& A, const Relation& B){
+		//~ if(A.domain != A.codomain || B.domain != B.codomain) throw invalid_argument("A lub B nie jest endomorfizmem!");
+			
+		//~ pair < dimensions, dimensions > C_dimensions = make_pair(A.codomain, B.domain);
+		//~ pair < dimensions, dimensions > D_dimensions = make_pair(B.codomain, A.domain);
+		
+		//~ for(const auto& C : Relation::all_relations[C_dimensions]){
+			//~ if(C * A != B * C) continue;
+		//~ for(const auto& D : Relation::all_relations[D_dimensions]){		
+			//~ if(D * B != A * D) continue;
+
+			//~ if(are_isomorphic_thread(A,B,C,D)) return true;
+		//~ }
+		//~ }
+		
+		//~ return false;
+	//~ }
 	
 	//~ bool Relation::are_isomorphic(const Relation& A, const Relation& B){
 		//~ if(A.domain != A.codomain || B.domain != B.codomain) throw invalid_argument("A lub B nie jest endomorfizmem!");
@@ -514,6 +551,7 @@ using namespace std;
 		Relation::generate_orbits();
 		cout << "generowanie klas\n";
 		Relation::generate_szymczak_classes();
+		cout << "zakończono generowanie\n";
 		return Relation::output(base, size);		
 	}
 	
