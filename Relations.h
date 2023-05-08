@@ -100,6 +100,10 @@ public:
 	friend const Relation& operator*(const Relation& left, const Relation& right);
 	
 	std::string toString() const;
+	
+	std::string toString_Filip() const;	
+
+	bool is_a_map() const;
 
 	static void generate_orbits(); //metoda niebezpieczna
 	
@@ -112,8 +116,10 @@ public:
 	static void generate_szymczak_classes();
 	
 	static std::string output(Long base, Long size);
+
+	static std::string output_Filip(Long base, Long size);
 	
-	static std::string generate(Long base, Long size);
+	static void generate(Long base, Long size);
 	
 	static void reset();
 };
