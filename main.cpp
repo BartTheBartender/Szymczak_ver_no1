@@ -8,20 +8,51 @@
 using namespace std;
 
 
+//~ int main() {
+	
+	//~ Long base = 4;
+	
+	//~ while(true){
+
+		//~ ostringstream name_dir;
+		//~ name_dir << "Wyniki/txt/Z-" << base;
+		//~ filesystem::create_directory(name_dir.str());
+		
+		//~ for(Long size = 1; size < (Long)10000; ++size){
+
+		    //~ auto start_time = std::chrono::high_resolution_clock::now();
+			
+			//~ ostringstream name;
+			//~ name << "Wyniki/txt/Z-" << base << "/Z-" << base << "-attempt-" << size << ".txt";
+
+			//~ ofstream file;
+			//~ file.open(name.str());
+
+			//~ file << Relation::generate(base,size);
+			//~ file.close();			
+			
+			//~ auto end_time = std::chrono::high_resolution_clock::now();
+			//~ auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
+			
+			//~ Relation::reset();
+			//~ if(duration.count() > 3600000) break;
+		//~ }
+		
+		//~ ++base;
+	//~ }
+
+//~ }
+
 int main() {
 	
-	Long base = 4;
-	
-	while(true){
+	Long base = 2;
+	Long size = 2;
+
 
 		ostringstream name_dir;
 		name_dir << "Wyniki/txt/Z-" << base;
 		filesystem::create_directory(name_dir.str());
 		
-		for(Long size = 1; size < (Long)10000; ++size){
-
-		    auto start_time = std::chrono::high_resolution_clock::now();
-			
 			ostringstream name;
 			name << "Wyniki/txt/Z-" << base << "/Z-" << base << "-attempt-" << size << ".txt";
 
@@ -30,19 +61,7 @@ int main() {
 
 			file << Relation::generate(base,size);
 			file.close();			
-			
-			auto end_time = std::chrono::high_resolution_clock::now();
-			auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
-			
-			Relation::reset();
-			if(duration.count() > 3600000) break;
-		}
-		
-		++base;
-	}
+
+
 
 }
-
-//~ int main(){
-	//~ cout << Relation::output(12,2);
-//~ }

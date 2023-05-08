@@ -8,8 +8,7 @@
 #include <utility>
 #include <algorithm>
 #include <functional>
-#include <thread>
-#include <future>
+#include <omp.h>
 
 class Relation;
 class EndoRelation;
@@ -106,7 +105,7 @@ public:
 	
 	void generate_orbit();
 	
-	static bool are_isomorphic_thread(const Relation& A, const Relation& B, const Relation& C, const Relation& D, Large index);
+	static bool are_isomorphic_thread(const Relation& A, const Relation& B, const Relation& C, const Relation& D);
 	
 	static bool are_isomorphic(const Relation& A, const Relation& B);
 	
