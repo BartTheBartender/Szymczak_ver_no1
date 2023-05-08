@@ -50,7 +50,7 @@ using namespace std;
 		matrix<bool>::operator=(source);
 		this -> domain = source.domain;
 		this -> codomain = source.codomain;
-		this -> orbit = orbit;
+		this -> orbit = source.orbit;
 		return *this;
 	}
 	
@@ -179,7 +179,9 @@ using namespace std;
 			multiplication_table[i].resize(all_relations[right].size());
 		}		
 		
+		#pragma omp parallel for shared(left, right)
 		for(Long i = 0; i < (Long)all_relations[left].size(); ++i){
+		#pragma omp parallel for shared(left, right)			
 		for(Long j = 0; j < (Long)all_relations[right].size(); ++j){
 			
 			Relation product = times(all_relations[left][i], all_relations[right][j]);
@@ -192,10 +194,13 @@ using namespace std;
 	}
 	
 	void Relation::generate_multiplication_table(){
-		
+		#pragma omp parallel for
 		for(auto left_domain : Relation::all_partitions){
+		#pragma omp parallel for
 		for(auto left_codomain : Relation::all_partitions){
+			#pragma omp parallel for
 			for(auto right_domain : Relation::all_partitions){
+			#pragma omp parallel for
 			for(auto right_codomain : Relation::all_partitions){
 				
 				cout << "\t" << left_domain << " " << left_codomain << " " << right_domain << " " << right_codomain << " ";
@@ -225,8 +230,9 @@ using namespace std;
 		}
 
 		Relation product(right.domain, left.codomain, left.size(), right[0].size());
-
+		#pragma omp parallel for shared(product)
 		for (Long i = 0; i < product.size(); ++i) {
+			#pragma omp parallel for shared(product)
 			for (Long j = 0; j < product[0].size(); ++j) {
 				for (Long k = 0; k < right.size(); ++k) {
 					product[i][j] = product[i][j] || (left[i][k] && right[k][j]);

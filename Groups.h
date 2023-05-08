@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <vector>
+#include <omp.h>
 
 using Int = uint_fast8_t;
 using Long = uint_fast32_t;

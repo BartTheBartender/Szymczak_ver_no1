@@ -1,4 +1,4 @@
-CXX = g++
+CXX = clang++
 #~ CXXFLAGS = -std=c++17 -fopenmp -Wall -g
 CXXFLAGS = -std=c++17 -fopenmp -O3 -funsafe-math-optimizations -fno-stack-protector -ffast-math -funroll-loops -fomit-frame-pointer -march=native
 LDFLAGS = -fopenmp
