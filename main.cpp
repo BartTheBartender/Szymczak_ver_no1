@@ -8,19 +8,22 @@
 using namespace std;
 namespace fs = std::filesystem;
 
+constexpr Long base = 7;
+constexpr Long dim = 2;
+
 
 int main() {
 	
-	Long base;
-	Long size;
+	//~ Long base;
+	//~ Long size;
 	
-	cout << "Generuj relacje w modułach nad Z/";
-	cin >> base;
-	cout << "do wymiaru ";
-	cin >> size;
-	cout << endl;
+	//~ cout << "Generuj relacje w modułach nad Z/";
+	//~ cin >> base;
+	//~ cout << "do wymiaru ";
+	//~ cin >> size;
+	//~ cout << endl;
 
-	Relation::generate(base, size);
+	Relation::generate(base, dim);
 	
 		ostringstream name_dir;
 		ostringstream name_dir_Filip;
@@ -47,17 +50,17 @@ int main() {
 		
 		ostringstream name;
 		ostringstream name_Filip;		
-		name << "Wyniki/txt/Z-" << base << "/Z-" << base << "-attempt-" << size << ".txt";
-		name_Filip << "Wyniki/txt-Filip/Z-" << base << "/Z-" << base << "-attempt-" << size << ".txt";
+		name << "Wyniki/txt/Z-" << base << "/Z-" << base << "-attempt-" << dim << ".txt";
+		name_Filip << "Wyniki/txt-Filip/Z-" << base << "/Z-" << base << "-attempt-" << dim << ".txt";
 
 		ofstream file;
 		file.open(name.str());
-		file << Relation::output(base, size);
+		file << Relation::output(base, dim);
 		file.close();			
 
 		ofstream file_Filip;
 		file_Filip.open(name_Filip.str());
-		file_Filip << Relation::output_Filip(base, size);
+		file_Filip << Relation::output_Filip(base, dim);
 		file_Filip.close();		
 }
 

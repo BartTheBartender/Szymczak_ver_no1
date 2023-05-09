@@ -576,26 +576,34 @@ bool Relation::are_isomorphic_thread(const Relation& A, const Relation& B, const
 	string Relation::output_Filip(Long base, Long size){
 		
 		ostringstream out;
-		out << base << " " << size << endl;
-		out << "===\n";
-		for(auto& szymczak_class : Relation::all_szymczak_classes){
+		out << "1f\n";
+		
+		for(Large i = 0; i < Relation::all_szymczak_classes.size() -1; ++i){
+			 unordered_map < dimensions , container < Relation* >, DimensionHasher > szymczak_class = all_szymczak_classes[i];
 			
 			for(auto& dimensions_ : Relation::all_partitions){
-				out << "---\n";
 				for(const auto& R : szymczak_class[dimensions_]){
 					
 					out << R -> toString_Filip();
-					if(R -> is_a_map()) out << " y\n";
-					else out << " n\n";
-					
+					if(R -> is_a_map()) out << "f";
+					out << "\n";	
 				};
-				
-				out << "---\n";
 			}
 			
 			out << "===\n";
 		}
-		
+
+		unordered_map < dimensions , container < Relation* >, DimensionHasher > szymczak_class = all_szymczak_classes[Relation::all_szymczak_classes.size() -1];
+			
+			for(auto& dimensions_ : Relation::all_partitions){
+				for(const auto& R : szymczak_class[dimensions_]){
+					
+					out << R -> toString_Filip();
+					if(R -> is_a_map()) out << "f";
+					out << "\n";	
+				};
+			}
+
 		return out.str();
 	}	
 	
