@@ -167,59 +167,16 @@ using namespace std;
 		throw out_of_range("nie znaleziono R w tablicy\n");
 	}
 	
-	table < Relation* > Relation::generate_multiplication_table(const dimensions& left_domain, const dimensions& left_codomain, const dimensions& right_domain, const dimensions& right_codomain){
-		table < Relation* > multiplication_table(Relation::all_relations[make_pair(left_domain, left_codomain)].size());
-
-		pair < dimensions , dimensions > left = make_pair(left_domain, left_codomain);
-		pair < dimensions , dimensions > right = make_pair(right_domain, right_codomain);
+	
+	Relation& Relation::operator*= (const Relation& right){
 		
-		for(Long i = 0; i < (Long)all_relations[left].size(); ++i){
-
-			multiplication_table[i].resize(all_relations[right].size());
-		}		
-		
-		#pragma omp parallel for shared(left, right)
-		for(Long i = 0; i < (Long)all_relations[left].size(); ++i){
-		#pragma omp parallel for shared(left, right)			
-		for(Long j = 0; j < (Long)all_relations[right].size(); ++j){
-			
-			Relation product = times(all_relations[left][i], all_relations[right][j]);
-			
-			multiplication_table[i][j] = find(product);//UWAGA
-		}			
-		}
-		
-		return multiplication_table;
+		Relation temp = (*this) * right;
+		*this = temp;
+		return *this;
 	}
 	
-	void Relation::generate_multiplication_table(){
-		#pragma omp parallel for
-		for(auto left_domain : Relation::all_partitions){
-		#pragma omp parallel for
-		for(auto left_codomain : Relation::all_partitions){
-			#pragma omp parallel for
-			for(auto right_domain : Relation::all_partitions){
-			#pragma omp parallel for
-			for(auto right_codomain : Relation::all_partitions){
-				
-				cout << "\t" << left_domain << " " << left_codomain << " " << right_domain << " " << right_codomain << " ";
-				if(right_codomain != left_domain){
-					cout << "nie\n";
-					continue;
-				}
-				cout << "tak\n";
-				Relation::multiplication_table.insert(
-					make_pair(
-						make_pair(make_pair(left_domain, left_codomain), make_pair(right_domain, right_codomain)),
-						Relation::generate_multiplication_table(left_domain, left_codomain, right_domain, right_codomain))
-				);
-			}
-			}		
-		}
-		}
-	}
 	
-	Relation Relation::times(const Relation& left, const Relation& right) {
+	Relation operator*(const Relation& left, const Relation& right){
 		if (left.size() == 0 || right.size() == 0 || left[0].size() == 0 || right[0].size() == 0){
 			throw invalid_argument("Empty relation in multiplication");
 		}
@@ -239,21 +196,6 @@ using namespace std;
 		}
 
 		return product;
-	}
-	
-	Relation& Relation::operator*= (const Relation& right){
-		
-		Long i = find_Long(*this);
-		Long j = find_Long(right);	
-		*this = *multiplication_table[make_pair(make_pair(this -> domain, this -> codomain), make_pair(right.domain, right.codomain))][i][j];
-		return *this;
-	}
-	
-	
-	const Relation& operator*(const Relation& left, const Relation& right){
-		
-		Long i = Relation::find_Long(left), j = Relation::find_Long(right);	
-		return *(Relation::multiplication_table[make_pair(make_pair(left.domain, left.codomain), make_pair(right.domain, right.codomain))][i][j]);
 	}
 	
 	
@@ -621,9 +563,7 @@ bool Relation::are_isomorphic_thread(const Relation& A, const Relation& B, const
 			cout << "dom: " << dom << " cod: " << cod << " " << all_relations[make_pair(dom, cod)].size() << endl;
 		}
 		}				
-				
-		cout << "generowanie tabliczki mnożenia\n";
-		Relation::generate_multiplication_table();
+			
 		
 		cout << "generowanie orbit\n";
 		Relation::generate_orbits();
