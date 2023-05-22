@@ -242,10 +242,13 @@ using namespace std;
 		return out.str();	
 	}	
 
-	void Relation::generate_orbits(){//metoda niebezpieczna
+	void Relation::generate_orbits(){//metoda 
+		
+		#pragma omp parallel for
 		for(auto d : Relation::all_partitions){
 			//~ cout << d << endl;
 			pair < dimensions , dimensions > domain_and_codomain = make_pair(d,d);
+			#pragma omp parallel for
 			for(Long i = 0; i < (Long)all_relations[domain_and_codomain].size(); ++i){
 				//~ cout << "generowanie orbity dla:\n" << (all_relations[domain_and_codomain][i]).toString() << endl;
 				(all_relations[domain_and_codomain][i]).generate_orbit();
