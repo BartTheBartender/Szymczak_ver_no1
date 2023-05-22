@@ -7,6 +7,7 @@ output: main.o Groups.o Relations.o
 	
 main.o: main.cpp Groups.h Relations.h
 	$(CXX) $(CXXFLAGS) -c main.cpp
+	
 
 Relations.o: Relations.cpp Relations.h Groups.h
 	$(CXX) $(CXXFLAGS) -c Relations.cpp

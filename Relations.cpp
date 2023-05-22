@@ -1,5 +1,4 @@
 #include "Relations.h"
-#include <omp.h>
 
 using namespace std;
 
@@ -230,12 +229,11 @@ using namespace std;
 		}
 
 		Relation product(right.domain, left.codomain, left.size(), right[0].size());
-		#pragma omp parallel for shared(product)
 		for (Long i = 0; i < product.size(); ++i) {
-			#pragma omp parallel for shared(product)
 			for (Long j = 0; j < product[0].size(); ++j) {
 				for (Long k = 0; k < right.size(); ++k) {
 					product[i][j] = product[i][j] || (left[i][k] && right[k][j]);
+					if(product[i][j]) break;
 				}
 			}
 		}
@@ -609,15 +607,27 @@ bool Relation::are_isomorphic_thread(const Relation& A, const Relation& B, const
 	
 	
 	void Relation::generate(Long base, Long size){
+		
+		
 		cout << "base = " << base << " size = " << size << endl;
 		cout << "generowanie podziałów\n";
 		Relation::generate_all_partitions(base,size);
-		cout << "generowanie relacji\n";
-		Relation::generate_all_relations();
+		
+		cout << "generowanie relacji\t";
+		Relation::generate_all_relations();	
+				
+		for(const auto& dom : all_partitions){
+		for(const auto& cod : all_partitions){
+			cout << "dom: " << dom << " cod: " << cod << " " << all_relations[make_pair(dom, cod)].size() << endl;
+		}
+		}				
+				
 		cout << "generowanie tabliczki mnożenia\n";
 		Relation::generate_multiplication_table();
+		
 		cout << "generowanie orbit\n";
 		Relation::generate_orbits();
+		
 		cout << "generowanie klas\n";
 		Relation::generate_szymczak_classes();
 		cout << "zakończono generowanie\n";

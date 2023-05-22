@@ -3,13 +3,14 @@
 #include <filesystem>
 #include "Groups.h"
 #include "Relations.h"
+#include "Maps.h"
 #include <chrono>
 
 using namespace std;
 namespace fs = std::filesystem;
 
-constexpr Long base = 7;
-constexpr Long dim = 2;
+constexpr Long base = 3;
+constexpr Long dim = 1;
 
 
 int main() {

@@ -415,6 +415,33 @@ group GroupTheory::epimorphismToSubgroup(const group& A, const group& B, const q
 	}
 	return G;
 }
+
+//~ group GroupTheory::epimorphismToSubgroup(const group& A, const element& a_, const group& B, const quotientGroup& Q, const coset& q_, const groupRanks& ranks){
+
+	//~ group G;
+	//~ element a = a_;
+	//~ coset q = q_;
+	
+	//~ while(a != A[0]){
+		
+		//~ for(auto b : q){
+			//~ G.push_back(GroupTheory::sum(a,b,ranks));
+		//~ }
+		
+		//~ q = GroupTheory::sum(q, q_, ranks);
+		//~ a = GroupTheory::sum(a, a_, ranks);
+		
+	//~ }
+	
+		//~ for(auto b : q){
+			//~ G.push_back(GroupTheory::sum(a,b,ranks));
+		//~ }
+		
+		//~ q = GroupTheory::sum(q, q_, ranks);
+		//~ a = GroupTheory::sum(a, a_, ranks);
+	
+	//~ return G;
+//~ }
 	
 container<group> GroupTheory::goursat(const group& A, const group& B, const groupRanks& ranks){
 	container<group> subgroups;
@@ -434,37 +461,37 @@ container<group> GroupTheory::goursat(const group& A, const group& B, const grou
 		}
 	}
 	
-	for(const auto& B_ : subgroupsOfB){
+		for(const auto& B_ : subgroupsOfB){
 
-		container<group> subgroupsOfB_ = subgroupsViaSuperGroup(B_, subgroupsOfB);
-		
-	for(const auto& A_ : subgroupsOfA){
-		
-		Long domainOrder = A_.size();
-		
-		for(const auto& C_ : subgroupsOfB_){
+			container<group> subgroupsOfB_ = subgroupsViaSuperGroup(B_, subgroupsOfB);
 			
-			Long codomainOrder = (Long) (B_.size()/C_.size());
-			if(domainOrder%codomainOrder != 0) continue;
+		for(const auto& A_ : subgroupsOfA){
 			
-			quotientGroup Q_ = quotient(B_, C_, ranks);
-			quotientGroup q = maxElement(Q_, ranks);
-			if((Long) q.size() != codomainOrder ) continue;
-
+			Long domainOrder = A_.size();
 			
-			if(domainOrder == 1){
-				subgroups.push_back(epimorphismToSubgroup(A_, B_,q,q[0],ranks));
-			}
-			
-			else{
+			for(const auto& C_ : subgroupsOfB_){
 				
-				for(Long i : phi(codomainOrder)){
-					subgroups.push_back(epimorphismToSubgroup(A_, B_,q,q[i],ranks)); //każdy homomorfizm
+				Long codomainOrder = (Long) (B_.size()/C_.size());
+				if(domainOrder%codomainOrder != 0) continue;
+				
+				quotientGroup Q_ = quotient(B_, C_, ranks);
+				quotientGroup q = maxElement(Q_, ranks);
+				if((Long) q.size() != codomainOrder ) continue;
+
+				
+				if(domainOrder == 1){
+					subgroups.push_back(epimorphismToSubgroup(A_, B_, q,q[0],ranks));
 				}
-			}				
+				
+				else{
+					
+					for(Long i : phi(codomainOrder)){
+						subgroups.push_back(epimorphismToSubgroup(A_, B_,q,q[i],ranks)); //każdy homomorfizm
+					}
+				}				
+			}
 		}
-	}
-	}
+		}
 	
 	return subgroups;
 }
