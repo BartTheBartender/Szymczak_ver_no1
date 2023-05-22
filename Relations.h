@@ -93,11 +93,9 @@ public:
 	
 	static void generate_multiplication_table();
 	
-	static Relation times(const Relation& left, const Relation& right);
-	
 	Relation& operator*= (const Relation& right);
 	
-	friend const Relation& operator*(const Relation& left, const Relation& right);
+	friend Relation operator*(const Relation& left, const Relation& right);
 	
 	std::string toString() const;
 	

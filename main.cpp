@@ -9,7 +9,7 @@
 using namespace std;
 namespace fs = std::filesystem;
 
-constexpr Long base = 3;
+constexpr Long base = 5;
 constexpr Long dim = 1;
 
 
