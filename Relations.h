@@ -9,9 +9,9 @@
 #include <algorithm>
 #include <functional>
 #include <omp.h>
+#include <chrono>
 
 class Relation;
-class EndoRelation;
 using Large = uint_fast32_t;
 using dimensions = groupRanks;
 
@@ -123,9 +123,5 @@ public:
 	
 	static void reset();
 };
-	//~ container < dimensions > Relation::all_partitions;
-	//~ unordered_map < pair < dimensions, dimensions >, container < Relation > , DimensionPairHasher > Relation::all_relations;
-	//~ unordered_map < pair < pair < dimensions, dimensions >,  pair < dimensions, dimensions > > , table < Relation* >, DimensionQuadrupleHasher > Relation::multiplication_table;
-	//~ container < unordered_map < dimensions , container < Relation* >, DimensionHasher > > Relation::all_szymczak_classes;
 
 

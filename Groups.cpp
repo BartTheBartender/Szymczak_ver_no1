@@ -378,18 +378,18 @@ group GroupTheory::split(group G, const group& A, const groupRanks& ranks){
 	return B;
 }
 	
-group GroupTheory::epimorphismToSubgroup(const group& A, const group& B,	const quotientGroup& Q, const coset& p, const groupRanks& ranks){
+group GroupTheory::epimorphismToSubgroup(const group& A, const group& B, const quotientGroup& Q, const coset& p, const groupRanks& ranks){
 			  
 	group G;
 
-	for(element b : B){
+	for(const auto& b : B){
 
 		coset bC_;	
 		bool isFound = false;
 		
 		for(coset q_ : Q){
 
-			for(element c : q_){
+			for(const auto& c : q_){
 
 				if(c == b){
 					bC_ = q_;
@@ -402,7 +402,7 @@ group GroupTheory::epimorphismToSubgroup(const group& A, const group& B,	const q
 		}
 		
 		coset q = Q[0];
-		for(element a : A){
+		for(const auto& a : A){
 			
 			if(q == bC_){
 
@@ -415,44 +415,83 @@ group GroupTheory::epimorphismToSubgroup(const group& A, const group& B,	const q
 	}
 	return G;
 }
+
+//~ group GroupTheory::epimorphismToSubgroup(const group& A, const element& a_, const group& B, const quotientGroup& Q, const coset& q_, const groupRanks& ranks){
+
+	//~ group G;
+	//~ element a = a_;
+	//~ coset q = q_;
+	
+	//~ while(a != A[0]){
+		
+		//~ for(auto b : q){
+			//~ G.push_back(GroupTheory::sum(a,b,ranks));
+		//~ }
+		
+		//~ q = GroupTheory::sum(q, q_, ranks);
+		//~ a = GroupTheory::sum(a, a_, ranks);
+		
+	//~ }
+	
+		//~ for(auto b : q){
+			//~ G.push_back(GroupTheory::sum(a,b,ranks));
+		//~ }
+		
+		//~ q = GroupTheory::sum(q, q_, ranks);
+		//~ a = GroupTheory::sum(a, a_, ranks);
+	
+	//~ return G;
+//~ }
 	
 container<group> GroupTheory::goursat(const group& A, const group& B, const groupRanks& ranks){
 	container<group> subgroups;
-	container<group> subgroupsOfB = generateSubgroups(B, ranks);
-	container<group> subgroupsOfA = generateSubgroups(A, ranks);
-
+	container<group> subgroupsOfB;
+	container<group> subgroupsOfA;
 	
-	for(group B_ : subgroupsOfB){
-
-		container<group> subgroupsOfB_ = subgroupsViaSuperGroup(B_, subgroupsOfB);
+	#pragma omp parallel sections
+	{
+		#pragma omp section
+		{
+			subgroupsOfB = generateSubgroups(B, ranks);
+		}
 		
-	for(group A_ : subgroupsOfA){
-		
-		Long domainOrder = A_.size();
-		
-		for(group C_ : subgroupsOfB_){
-			
-			Long codomainOrder = (Long) (B_.size()/C_.size());
-			if(domainOrder%codomainOrder != 0) continue;
-			
-			quotientGroup Q_ = quotient(B_, C_, ranks);
-			quotientGroup q = maxElement(Q_, ranks);
-			if((Long) q.size() != codomainOrder ) continue;
-
-			
-			if(domainOrder == 1){
-				subgroups.push_back(epimorphismToSubgroup(A_, B_,q,q[0],ranks));
-			}
-			
-			else{
-				
-				for(Long i : phi(codomainOrder)){
-					subgroups.push_back(epimorphismToSubgroup(A_, B_,q,q[i],ranks)); //każdy homomorfizm
-				}
-			}				
+		#pragma omp section
+		{
+			subgroupsOfA = generateSubgroups(A, ranks);
 		}
 	}
-	}
+	
+		for(const auto& B_ : subgroupsOfB){
+
+			container<group> subgroupsOfB_ = subgroupsViaSuperGroup(B_, subgroupsOfB);
+			
+		for(const auto& A_ : subgroupsOfA){
+			
+			Long domainOrder = A_.size();
+			
+			for(const auto& C_ : subgroupsOfB_){
+				
+				Long codomainOrder = (Long) (B_.size()/C_.size());
+				if(domainOrder%codomainOrder != 0) continue;
+				
+				quotientGroup Q_ = quotient(B_, C_, ranks);
+				quotientGroup q = maxElement(Q_, ranks);
+				if((Long) q.size() != codomainOrder ) continue;
+
+				
+				if(domainOrder == 1){
+					subgroups.push_back(epimorphismToSubgroup(A_, B_, q,q[0],ranks));
+				}
+				
+				else{
+					
+					for(Long i : phi(codomainOrder)){
+						subgroups.push_back(epimorphismToSubgroup(A_, B_,q,q[i],ranks)); //każdy homomorfizm
+					}
+				}				
+			}
+		}
+		}
 	
 	return subgroups;
 }
@@ -479,9 +518,9 @@ group GroupTheory::cap(const group& A, const group& B){
 
 	group C;
 	
-	for(element a : A){
+	for(const auto& a : A){
 	
-		for(element b : B){
+		for(const auto& b : B){
 		
 			if(a == b){C.push_back(a); break;}
 		}
@@ -494,11 +533,11 @@ container<group> GroupTheory::subgroupsViaSuperGroup(const group&C, const contai
 	
 	container<group> subgroups;
 	
-	for(group H: subgroupsOfSuperGroup){
+	for(const auto& H: subgroupsOfSuperGroup){
 	
 		group G = cap(C, H); bool isFound = false;
 		
-		for(group K : subgroups){
+		for(const auto& K : subgroups){
 			if(K == G){isFound = true; break;}
 		}
 		

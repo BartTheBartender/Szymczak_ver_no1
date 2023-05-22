@@ -1,5 +1,4 @@
 #include "Relations.h"
-#include <omp.h>
 
 using namespace std;
 
@@ -50,7 +49,7 @@ using namespace std;
 		matrix<bool>::operator=(source);
 		this -> domain = source.domain;
 		this -> codomain = source.codomain;
-		this -> orbit = orbit;
+		this -> orbit = source.orbit;
 		return *this;
 	}
 	
@@ -179,7 +178,9 @@ using namespace std;
 			multiplication_table[i].resize(all_relations[right].size());
 		}		
 		
+		#pragma omp parallel for shared(left, right)
 		for(Long i = 0; i < (Long)all_relations[left].size(); ++i){
+		#pragma omp parallel for shared(left, right)			
 		for(Long j = 0; j < (Long)all_relations[right].size(); ++j){
 			
 			Relation product = times(all_relations[left][i], all_relations[right][j]);
@@ -192,10 +193,13 @@ using namespace std;
 	}
 	
 	void Relation::generate_multiplication_table(){
-		
+		#pragma omp parallel for
 		for(auto left_domain : Relation::all_partitions){
+		#pragma omp parallel for
 		for(auto left_codomain : Relation::all_partitions){
+			#pragma omp parallel for
 			for(auto right_domain : Relation::all_partitions){
+			#pragma omp parallel for
 			for(auto right_codomain : Relation::all_partitions){
 				
 				cout << "\t" << left_domain << " " << left_codomain << " " << right_domain << " " << right_codomain << " ";
@@ -225,11 +229,11 @@ using namespace std;
 		}
 
 		Relation product(right.domain, left.codomain, left.size(), right[0].size());
-
 		for (Long i = 0; i < product.size(); ++i) {
 			for (Long j = 0; j < product[0].size(); ++j) {
 				for (Long k = 0; k < right.size(); ++k) {
 					product[i][j] = product[i][j] || (left[i][k] && right[k][j]);
+					if(product[i][j]) break;
 				}
 			}
 		}
@@ -570,40 +574,60 @@ bool Relation::are_isomorphic_thread(const Relation& A, const Relation& B, const
 	string Relation::output_Filip(Long base, Long size){
 		
 		ostringstream out;
-		out << base << " " << size << endl;
-		out << "===\n";
-		for(auto& szymczak_class : Relation::all_szymczak_classes){
+		out << "1f\n";
+		
+		for(Large i = 0; i < Relation::all_szymczak_classes.size() -1; ++i){
+			 unordered_map < dimensions , container < Relation* >, DimensionHasher > szymczak_class = all_szymczak_classes[i];
 			
 			for(auto& dimensions_ : Relation::all_partitions){
-				out << "---\n";
 				for(const auto& R : szymczak_class[dimensions_]){
 					
 					out << R -> toString_Filip();
-					if(R -> is_a_map()) out << " y\n";
-					else out << " n\n";
-					
+					if(R -> is_a_map()) out << "f";
+					out << "\n";	
 				};
-				
-				out << "---\n";
 			}
 			
 			out << "===\n";
 		}
-		
+
+		unordered_map < dimensions , container < Relation* >, DimensionHasher > szymczak_class = all_szymczak_classes[Relation::all_szymczak_classes.size() -1];
+			
+			for(auto& dimensions_ : Relation::all_partitions){
+				for(const auto& R : szymczak_class[dimensions_]){
+					
+					out << R -> toString_Filip();
+					if(R -> is_a_map()) out << "f";
+					out << "\n";	
+				};
+			}
+
 		return out.str();
 	}	
 	
 	
 	void Relation::generate(Long base, Long size){
+		
+		
 		cout << "base = " << base << " size = " << size << endl;
 		cout << "generowanie podziałów\n";
 		Relation::generate_all_partitions(base,size);
-		cout << "generowanie relacji\n";
-		Relation::generate_all_relations();
+		
+		cout << "generowanie relacji\t";
+		Relation::generate_all_relations();	
+				
+		for(const auto& dom : all_partitions){
+		for(const auto& cod : all_partitions){
+			cout << "dom: " << dom << " cod: " << cod << " " << all_relations[make_pair(dom, cod)].size() << endl;
+		}
+		}				
+				
 		cout << "generowanie tabliczki mnożenia\n";
 		Relation::generate_multiplication_table();
+		
 		cout << "generowanie orbit\n";
 		Relation::generate_orbits();
+		
 		cout << "generowanie klas\n";
 		Relation::generate_szymczak_classes();
 		cout << "zakończono generowanie\n";
