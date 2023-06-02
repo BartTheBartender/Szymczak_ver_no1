@@ -9,8 +9,8 @@
 using namespace std;
 namespace fs = std::filesystem;
 
-constexpr Long base = 5;
-constexpr Long dim = 1;
+constexpr Long base = 2;
+constexpr Long dim = 2;
 
 
 int main() {
@@ -27,9 +27,9 @@ int main() {
 	Relation::generate(base, dim);
 	
 		ostringstream name_dir;
-		ostringstream name_dir_Filip;
+		ostringstream name_dir_python;
 		name_dir << "Wyniki/txt/Z-" << base;
-		name_dir_Filip << "Wyniki/txt-Filip/Z-" << base;		
+		name_dir_python << "Wyniki/txt-python/Z-" << base;		
 
 
 		if (!fs::exists("Wyniki")) {
@@ -38,30 +38,30 @@ int main() {
 		if (!fs::exists("Wyniki/txt")) {
 			fs::create_directory("Wyniki/txt");
 		}
-		if (!fs::exists("Wyniki/txt-Filip")) {
-			fs::create_directory("Wyniki/txt-Filip");
+		if (!fs::exists("Wyniki/txt-python")) {
+			fs::create_directory("Wyniki/txt-python");
 		}		
 		
 		if (!fs::exists(name_dir.str())) {
 			fs::create_directory(name_dir.str());
 		}
-		if (!fs::exists(name_dir_Filip.str())) {
-			fs::create_directory(name_dir_Filip.str());
+		if (!fs::exists(name_dir_python.str())) {
+			fs::create_directory(name_dir_python.str());
 		}
 		
 		ostringstream name;
-		ostringstream name_Filip;		
+		ostringstream name_python;		
 		name << "Wyniki/txt/Z-" << base << "/Z-" << base << "-attempt-" << dim << ".txt";
-		name_Filip << "Wyniki/txt-Filip/Z-" << base << "/Z-" << base << "-attempt-" << dim << ".txt";
+		name_python << "Wyniki/txt-python/Z-" << base << "/Z-" << base << "-attempt-" << dim << ".txt";
 
 		ofstream file;
 		file.open(name.str());
 		file << Relation::output(base, dim);
 		file.close();			
 
-		ofstream file_Filip;
-		file_Filip.open(name_Filip.str());
-		file_Filip << Relation::output_Filip(base, dim);
-		file_Filip.close();		
+		ofstream file_python;
+		file_python.open(name_python.str());
+		file_python << Relation::output_python(base, dim);
+		file_python.close();		
 }
 

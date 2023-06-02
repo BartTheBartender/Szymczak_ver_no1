@@ -198,6 +198,21 @@ using namespace std;
 		return product;
 	}
 	
+	string Relation::toString(const dimensions& dimensions_){
+		
+		Int size = 1;
+		for(auto d : dimensions_) size *= d;
+		
+		holder < Int > labels(size);
+		
+		
+		ostringstream out;
+		
+		for(Int i = 0; i < size - 1; ++i) out << (short)labels[i] << " ";
+		out << (short)labels[size - 1] << "\n";;
+		
+		return out.str();
+	}
 	
 	string Relation::toString() const {
 		ostringstream out;
@@ -228,7 +243,7 @@ using namespace std;
 		return true;
 	}
 	
-	string Relation::toString_Filip() const {
+	string Relation::toString_python() const {
 		ostringstream out;
 			
 		for(Int i = 0; i < this -> size(); ++i){
@@ -243,7 +258,7 @@ using namespace std;
 	}	
 
 	void Relation::generate_orbits(){//metoda 
-		
+
 		#pragma omp parallel for
 		for(auto d : Relation::all_partitions){
 			//~ cout << d << endl;
@@ -500,11 +515,13 @@ bool Relation::are_isomorphic_thread(const Relation& A, const Relation& B, const
 			
 			for(auto& dimensions_ : Relation::all_partitions){
 				
-				out << dimensions_ << endl;
-				out << "---\n";
+				
 				for(const auto& R : szymczak_class[dimensions_]){
 					
-					out << R -> toString() << endl;
+					out << R -> toString();
+					
+					if(R -> is_a_map()) out << "y\n";
+					else out << "n\n";
 				};
 				
 				out << "---\n";
@@ -516,36 +533,45 @@ bool Relation::are_isomorphic_thread(const Relation& A, const Relation& B, const
 		return out.str();
 	}
 	
-	string Relation::output_Filip(Long base, Long size){
+	string Relation::output_python(Long base, Long size){
 		
 		ostringstream out;
-		out << "1f\n";
+		out << "0---1yX===";
 		
-		for(Large i = 0; i < Relation::all_szymczak_classes.size() -1; ++i){
+		for(Large i = 0; i < Relation::all_szymczak_classes.size(); ++i){
 			 unordered_map < dimensions , container < Relation* >, DimensionHasher > szymczak_class = all_szymczak_classes[i];
 			
+			
 			for(auto& dimensions_ : Relation::all_partitions){
+				
+				for(Int i = 0; i < dimensions_.size(); ++i){
+					out << (short)dimensions_[i];
+				}
+				out << "---";
+				
 				for(const auto& R : szymczak_class[dimensions_]){
 					
-					out << R -> toString_Filip();
-					if(R -> is_a_map()) out << "f";
-					out << "\n";	
+					out << R -> toString_python();
+					if(R -> is_a_map()) out << "yX";
+					else out << "nX";
 				};
+				
+				out << "===";
 			}
 			
-			out << "===\n";
+			out << "###";
 		}
 
-		unordered_map < dimensions , container < Relation* >, DimensionHasher > szymczak_class = all_szymczak_classes[Relation::all_szymczak_classes.size() -1];
+		//~ unordered_map < dimensions , container < Relation* >, DimensionHasher > szymczak_class = all_szymczak_classes[Relation::all_szymczak_classes.size() -1];
 			
-			for(auto& dimensions_ : Relation::all_partitions){
-				for(const auto& R : szymczak_class[dimensions_]){
+			//~ for(auto& dimensions_ : Relation::all_partitions){
+				//~ for(const auto& R : szymczak_class[dimensions_]){
 					
-					out << R -> toString_Filip();
-					if(R -> is_a_map()) out << "f";
-					out << "\n";	
-				};
-			}
+					//~ out << R -> toString_python();
+					//~ if(R -> is_a_map()) out << "y\n";
+					//~ else out <<"n\n";
+				//~ };
+			//~ }
 
 		return out.str();
 	}	
