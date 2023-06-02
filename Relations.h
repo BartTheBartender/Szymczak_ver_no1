@@ -99,7 +99,7 @@ public:
 	
 	std::string toString() const;
 	
-	std::string toString_Filip() const;	
+	std::string toString_python() const;	
 
 	bool is_a_map() const;
 
@@ -113,9 +113,11 @@ public:
 	
 	static void generate_szymczak_classes();
 	
+	static std::string toString(const dimensions& dimensions_);
+	
 	static std::string output(Long base, Long size);
 
-	static std::string output_Filip(Long base, Long size);
+	static std::string output_python(Long base, Long size);
 	
 	static void generate(Long base, Long size);
 	
