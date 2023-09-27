@@ -501,7 +501,7 @@ container<group> GroupTheory::generateSubgroups(const group& G, const groupRanks
 	
 	if(A.size() == G.size()){
 		container<group> subgroups;
-		for(Long div: GroupTheory::sigma(G.size())){
+		for(Long div: GroupTheory::sigma((Long)G.size())){
 			group H;
 			for(Long k = 0; k != (Long)G.size(); k+=div) H.push_back(A[k]);
 			subgroups.push_back(H);

@@ -4,16 +4,21 @@
 #include "Groups.h"
 #include "Relations.h"
 
-#include <chrono>
+//#include <chrono>
 
 using namespace std;
-namespace fs = std::filesystem;
+namespace fs = filesystem;
 
-constexpr Long base = 2;
-constexpr Long dim = 2;
 
 
 int main() {
+Long base, dim;
+
+  cout << "generuj moduły nad: Z";
+  cin >> base;
+  cout << "\ndo wymiaru: ";
+  cin >> dim;
+  cout << endl;
 	
 	//~ Long base;
 	//~ Long size;
@@ -25,6 +30,10 @@ int main() {
 	//~ cout << endl;
 
 	Relation::generate(base, dim);
+
+    cout << Relation::output(base, dim);
+
+    /*
 	
 		ostringstream name_dir;
 		ostringstream name_dir_python;
@@ -63,5 +72,6 @@ int main() {
 		file_python.open(name_python.str());
 		file_python << Relation::output_python(base, dim);
 		file_python.close();		
+    */
 }
 

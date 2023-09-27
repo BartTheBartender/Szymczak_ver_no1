@@ -8,7 +8,7 @@
 #include <utility>
 #include <algorithm>
 #include <functional>
-#include <omp.h>
+//#include <omp.h>
 #include <chrono>
 
 class Relation;

@@ -34,6 +34,7 @@ using namespace std;
 	bool Relation::operator == (const Relation& source) const {
 		if(this -> domain != source.domain || this -> codomain != source.codomain) return false;
 		
+    
 		return ((matrix<bool>)(*this) == (matrix<bool>)(source));
 	}
 	
@@ -127,21 +128,26 @@ using namespace std;
 		group G = GroupTheory::generateGroup(merged);	
 		container <group> subgroups_of_G = GroupTheory::generateSubgroups(G, merged);
 		
-			cout << "\twygenerowano podgrupy G: ";
+			//cout << "\twygenerowano podgrupy G: ";
 			
 			if(domain.size() == 0) throw invalid_argument("Pusta dziedzina w generacji");
-			cout << "(Z/" << (short)domain[0];
+			/*
+      cout << "(Z/" << (short)domain[0];
 			for(Long i = 1; i < domain.size(); ++i) cout << "+Z/" << (short)domain[i];
+      */
 			
 			if(codomain.size() == 0) throw invalid_argument("Pusta przeciwdziedzina w generacji");
+
+      /*
 			cout << ") x (Z/" << (short)codomain[0];
 			for(Long i = 1; i < codomain.size(); ++i) cout << "+Z/" << (short)codomain[i];
 			cout << ")";
+      */
 
 		for(Large i = 0; i < (Large)subgroups_of_G.size(); ++i){
 			relations.push_back(Relation(subgroups_of_G[i], domain, codomain, domain_prod, codomain_prod, merged));
 		}
-			cout << "\t\twygenerowano relacje\n";
+		//	cout << "\t\twygenerowano relacje\n";
 					
 		return relations;
 	}
@@ -200,18 +206,13 @@ using namespace std;
 	
 	string Relation::toString(const dimensions& dimensions_){
 		
-		Int size = 1;
-		for(auto d : dimensions_) size *= d;
-		
-		holder < Int > labels(size);
-		
-		
 		ostringstream out;
 		
-		for(Int i = 0; i < size - 1; ++i) out << (short)labels[i] << " ";
-		out << (short)labels[size - 1] << "\n";;
+		out << "Z/" << (short)dimensions_[0];
+		for(Int i = 1; i < dimensions_.size(); ++i) out << "+Z/" << (short)dimensions_[i] << "+";
 		
 		return out.str();
+
 	}
 	
 	string Relation::toString() const {
@@ -219,12 +220,12 @@ using namespace std;
 			
 		for(Int i = 0; i < this -> size(); ++i){
 			
-			for(Int j = 0; j < (*this)[i].size() - 1; ++j){
+			for(Int j = 0; j < (*this)[i].size(); ++j){
 			
-				out << (short)(*this)[i][j] << " ";
+				out << (short)(*this)[i][j];
 			}
-			out << (short)(*this)[i][(*this)[i].size() - 1] << endl;
 		}
+    out << endl;
 		
 		return out.str();	
 	}
@@ -509,25 +510,20 @@ bool Relation::are_isomorphic_thread(const Relation& A, const Relation& B, const
 	string Relation::output(Long base, Long size){
 		
 		ostringstream out;
-		out << base << " " << size << endl;
-		out << "===\n";
 		for(auto& szymczak_class : Relation::all_szymczak_classes){
+      out << "---\n";
 			
-			for(auto& dimensions_ : Relation::all_partitions){
+		  for(auto& dimensions_ : Relation::all_partitions){
+
+        if(szymczak_class[dimensions_].size() != 0) {
 				
-				
-				for(const auto& R : szymczak_class[dimensions_]){
-					
-					out << R -> toString();
-					
-					if(R -> is_a_map()) out << "y\n";
-					else out << "n\n";
-				};
-				
-				out << "---\n";
-			}
+				  out << "-\n" << Relation::toString(dimensions_) << ":\n";
+				  for(const auto& R : szymczak_class[dimensions_]){
+					  out << R -> toString();
+				  };
+				}
+      }
 			
-			out << "===\n";
 		}
 		
 		return out.str();
@@ -580,26 +576,28 @@ bool Relation::are_isomorphic_thread(const Relation& A, const Relation& B, const
 	void Relation::generate(Long base, Long size){
 		
 		
-		cout << "base = " << base << " size = " << size << endl;
-		cout << "generowanie podziałów\n";
+		//cout << "base = " << base << " size = " << size << endl;
+		//cout << "generowanie podziałów\n";
 		Relation::generate_all_partitions(base,size);
 		
-		cout << "generowanie relacji\t";
+		//cout << "generowanie relacji\t";
 		Relation::generate_all_relations();	
 				
-		for(const auto& dom : all_partitions){
+		/*
+    for(const auto& dom : all_partitions){
 		for(const auto& cod : all_partitions){
 			cout << "dom: " << dom << " cod: " << cod << " " << all_relations[make_pair(dom, cod)].size() << endl;
 		}
-		}				
+		}	
+    */
 			
 		
-		cout << "generowanie orbit\n";
+		//cout << "generowanie orbit\n";
 		Relation::generate_orbits();
 		
-		cout << "generowanie klas\n";
+		//cout << "generowanie klas\n";
 		Relation::generate_szymczak_classes();
-		cout << "zakończono generowanie\n";
+		//cout << "zakończono generowanie\n";
 		
 	}
 	

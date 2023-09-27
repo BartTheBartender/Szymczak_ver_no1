@@ -2,7 +2,7 @@
 
 #include <iostream>
 #include <vector>
-#include <omp.h>
+//#include "opt/homebrew/opt/libomp/include/omp.h"
 
 using Int = uint_fast8_t;
 using Long = uint_fast32_t;

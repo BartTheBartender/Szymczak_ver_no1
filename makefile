@@ -1,7 +1,6 @@
 CXX = g++
 #~ CXXFLAGS = -std=c++17 -fopenmp -Wall -g
-CXXFLAGS = -std=c++17 -fopenmp -O3 -funsafe-math-optimizations -fno-stack-protector -ffast-math -funroll-loops -march=native -pg
-LDFLAGS = -fopenmp
+CXXFLAGS = -std=c++17  -O3 -funsafe-math-optimizations -fno-stack-protector -ffast-math -funroll-loops -march=native -pg
 output: main.o Groups.o Relations.o
 	$(CXX) main.o Groups.o Relations.o -o output $(LDFLAGS)
 	
