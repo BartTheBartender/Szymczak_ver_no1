@@ -31,7 +31,7 @@ Long base, dim = 1;
 
     //cout << Relation::output(base, dim);
     
-    cout << "Module: Z/" << base << ", number of classes: " << Relation::number_of_szymczak_classes();
+    cout << "Module: Z/" << base << ", number of classes: " << Relation::number_of_szymczak_classes() << endl;
     /*
 	
 		ostringstream name_dir;
