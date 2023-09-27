@@ -14,11 +14,10 @@ namespace fs = filesystem;
 int main() {
 Long base, dim;
 
-  cout << "generuj moduły nad: Z";
+  //cout << "modules over: Z";
   cin >> base;
-  cout << "\ndo wymiaru: ";
+  //cout << "\nup to dimension: ";
   cin >> dim;
-  cout << endl;
 	
 	//~ Long base;
 	//~ Long size;
@@ -31,7 +30,9 @@ Long base, dim;
 
 	Relation::generate(base, dim);
 
-    cout << Relation::output(base, dim);
+    //cout << Relation::output(base, dim);
+    
+    cout << "Number of szymczak classes: " << Relation::number_of_szymczak_classes();
 
     /*
 	

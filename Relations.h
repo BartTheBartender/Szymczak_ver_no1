@@ -122,6 +122,8 @@ public:
 	static void generate(Long base, Long size);
 	
 	static void reset();
+
+  static size_t number_of_szymczak_classes(){return Relation::all_szymczak_classes.size();}
 };
 
 
