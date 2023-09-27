@@ -271,7 +271,6 @@ using namespace std;
 				//~ cout <<"------------------\n\n";
 			}
 			
-			cout << endl;
 		}
 	}
 	
